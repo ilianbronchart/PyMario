@@ -78,12 +78,13 @@ class Main():
             self.time.update_value(self.time.total_value - 1)
             self.timer = 0
 
-        if not c.final_count_down and self.time.total_value < 100 and not self.out_of_time:
-            pg.mixer.music.stop()
-            pg.mixer.music.set_endevent(c.OUT_OF_TIME_END)
-            pg.mixer.music.load(sounds.out_of_time)
-            pg.mixer.music.play()
-            self.out_of_time = True
+        if not c.mario.current_mario_state == 'Win_State':
+            if not c.final_count_down and self.time.total_value < 100 and not self.out_of_time:
+                pg.mixer.music.stop()
+                pg.mixer.music.set_endevent(c.OUT_OF_TIME_END)
+                pg.mixer.music.load(sounds.out_of_time)
+                pg.mixer.music.play()
+                self.out_of_time = True
 
         if not c.final_count_down and self.time.total_value == 0:
             c.mario.mario_states.on_event('dead')
