@@ -1,0 +1,21 @@
+from data import main
+from data import menu
+from data import config as c
+import pygame as pg
+import os
+import sys
+
+if __name__ == '__main__':
+    pg.init()
+    c.screen = pg.display.set_mode((c.SCREEN_SIZE.x, c.SCREEN_SIZE.y))
+    pg.display.set_caption(c.CAPTION)
+    c.clock = pg.time.Clock()
+
+    menu = menu.Menu()
+    menu.menu_loop()
+    if menu.quit_state == 'play':
+        main = main.Main()
+        main.main_loop()
+        if main.quit_state == 'menu':
+            os.execl(sys.executable, sys.executable, *sys.argv)
+    pg.quit()
