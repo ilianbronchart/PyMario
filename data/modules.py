@@ -1,6 +1,7 @@
 from . import config as c
 from . import sprites
 import pygame as pg
+import math
 
 class Game_Object():
     def __init__(self, rect):
@@ -119,15 +120,25 @@ class Digit_System():
     def update_value(self, new_value):
         self.digit_array = []
         self.total_value = new_value
-        if new_value >= 0:
-            remaining_digits = self.number_of_digits - len(str(self.total_value))
+        if new_value > 0:
+            remaining_digits = self.number_of_digits - self.get_number_of_digits(new_value)
             for i in range(0, remaining_digits):
                 self.digit_array.append(0)
             for x in str(self.total_value):
                 self.digit_array.append(int(x))
         else:
-            self.update_value(0)
+            self.digit_array = [0] * self.number_of_digits
     
     def draw(self):
         for i, x in enumerate(self.digit_array):
             c.screen.blit(sprites.digits, (self.start_pos.x + 24 * i, self.start_pos.y), (24 * x, 0, 24, 21))
+
+    def get_number_of_digits(self, value):
+        if value == 0:
+            return 0
+        elif value == 1:
+            return 1
+        else:
+            return math.ceil(math.log10(value))
+
+    

@@ -1,5 +1,6 @@
 from . import config as c
 from .modules import Vector2
+import math
 
 def clamp(x, a, b):
     return max(a, min(b, x))

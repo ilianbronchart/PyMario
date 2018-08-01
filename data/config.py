@@ -51,6 +51,7 @@ collected_coins = 0
 collected_mushrooms = 0
 killed_goombas = 0
 time_score = 0
+
 COIN_SCORE = 200
 MUSHROOM_SCORE = 1000
 GOOMBA_SCORE = 100
