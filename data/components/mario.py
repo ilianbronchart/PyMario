@@ -8,6 +8,7 @@ import pygame as pg
 import random
 
 class Mario(Entity):
+    """Mario Class"""
     def __init__(self, rect, vel = Vector2()):
         super(Mario, self).__init__(vel, rect)
         self.animation = self.Animation()
@@ -18,14 +19,16 @@ class Mario(Entity):
         self.pressed_right = False
         self.spacebar = False
         self.crouch = False
-        self.flip_sprites = False
         self.freeze_movement = False
         self.freeze_input = False
+
+        self.flip_sprites = False
         self.to_menu = False
 
         self.start_height = 0
 
     def __getattr__(self, name):
+        """Shorter variable calls"""
         if name == 'current_action_state':
             return self.action_states.get_state()
         elif name == 'pos':
@@ -35,6 +38,7 @@ class Mario(Entity):
         return object.__getattribute__(self, name)
 
     def draw(self):
+        """Extract sprite from atlas"""
         if c.camera.contains(self.rect):
             view_pos = c.camera.to_view_space(self.pos)
             if self.flip_sprites:
@@ -44,6 +48,7 @@ class Mario(Entity):
                 c.screen.blit(sprites.tile_set, (view_pos.x, view_pos.y), self.animation.current_sprite)
 
     def update(self):
+        """Get input and perform actions"""
         if not self.freeze_input:
             if c.keys[pg.K_a] and not c.keys[pg.K_d]:
                 self.pressed_left = True
@@ -72,6 +77,7 @@ class Mario(Entity):
                 self.crouch = False
 
     def physics_update(self):
+        """Perform actions based on input"""
         if not self.current_mario_state == 'Invincible_State':
             self.mario_states.update()
         if not self.freeze_movement:
@@ -91,17 +97,20 @@ class Mario(Entity):
             self.mario_states.on_event('dead')
 
     def movement(self):
+        """Aggregates movement related statements"""
         accelerate(self, c.ACCELERATION, c.GRAVITY, c.MAX_VEL)
         self.vel.x *= c.FRICTION
         self.move()
 
     def check_flip_sprites(self):
+        """Check whether to flip sprites"""
         if self.vel.x < 0:
-                self.flip_sprites = True
+            self.flip_sprites = True
         elif self.vel.x > 0:
             self.flip_sprites = False
 
     def state_events(self):
+        """Change current state based on events and perform actions based on current state"""
         if any(self.current_action_state == state for state in ['Move_State', 'Decel_State', 'Brake_State', 'Idle_State']):
             self.start_height = self.pos.y
 
@@ -135,12 +144,14 @@ class Mario(Entity):
                 self.action_states.on_event('crouch')
 
     def move(self):
+        """Separates x and y movement"""
         if self.vel.x != 0:
             self.move_single_axis(self.vel.x, 0)
         if self.vel.y != 0:
             self.move_single_axis(0, self.vel.y)
 
     def move_single_axis(self, dx, dy):
+        """Move based on velocity and check for collisions based on new position"""
         self.pos.x += dx * c.delta_time
         self.pos.y += dy * c.delta_time
 
@@ -151,12 +162,14 @@ class Mario(Entity):
         self.check_backtrack()
 
     def check_backtrack(self):
+        """Stop mario from backtracking in the level"""
         if self.pos.x < c.camera.pos.x:
             self.pos.x = clamp(self.pos.x, c.camera.pos.x, c.SCREEN_SIZE.x)
             self.vel.x = 0    
             self.action_states.on_event('idle')      
 
     def collider_collisions(self, dx, dy):
+        """Check for collisions with tiles"""
         other_collider = self.rect.check_collisions(level.static_colliders + level.dynamic_colliders)
 
         if other_collider is None:
@@ -183,6 +196,7 @@ class Mario(Entity):
             self.vel.y = c.BOUNCE_VEL
 
     def check_entity_collisions(self):
+        """Check for collisions with entities"""
         entities = self.rect.check_entity_collisions(level.super_mushrooms + level.enemies)
 
         for entity in entities:
@@ -215,6 +229,7 @@ class Mario(Entity):
                         self.mario_states.on_event('shrink')
 
     def interact_with_tile(self, tile):
+        """Interact with tile based on current mario state"""
         if self.current_mario_state == 'Small_Mario':
             tile.state_machine.on_event('bounce')
             if tile.__class__.__name__ == 'Brick':
@@ -225,6 +240,7 @@ class Mario(Entity):
                 tile.state_machine.on_event('bounce')
 
     class Animation():
+        """Contains specific animation variables and functions for this class"""
         def __init__(self):
             self.current_sprite = sprites.SMALL_MARIO_IDLE
 
@@ -242,10 +258,12 @@ class Mario(Entity):
             self.start_sprite_height = 0
 
         def reset_anim_vars(self):
+            """Reset animation variables"""
             self.anim_frame = 0
             self.anim_timer = c.INITIAL_TIMER_VALUE
 
         def grow_anim(self):
+            """Animation when growing"""
             self.current_sprite = sprites.GROW_SPRITES[self.grow_frames[self.anim_frame]]
             self.anim_timer += c.delta_time
             if self.anim_timer > 6 * c.delta_time:
@@ -254,6 +272,7 @@ class Mario(Entity):
             self.new_y = self.start_height - (self.current_sprite[3] - 48)
 
         def run_anim(self):
+            """Animation when running"""
             if self.mario_size == 'Small_Mario':
                 self.current_sprite = sprites.SMALL_MARIO_RUN[self.run_frames[self.anim_frame % 4]]
             else:
@@ -264,6 +283,7 @@ class Mario(Entity):
                 self.anim_timer = 0
 
         def shrink_anim(self):
+            """Animation when shrinking"""
             self.current_sprite = sprites.SHRINK_SPRITES[self.shrink_frames[self.anim_frame]]
             self.anim_timer += c.delta_time
             if self.anim_timer > 6 * c.delta_time:
@@ -272,6 +292,7 @@ class Mario(Entity):
             self.new_y = self.start_height + (self.start_sprite_height - self.current_sprite[3])
 
         def win_anim_on_flag(self):
+            """Animation when sliding down flag pole"""
             if self.mario_size == 'Small_Mario':
                 self.current_sprite = sprites.WIN_SPRITES_SMALL[self.anim_frame % 2]
             else:
@@ -282,6 +303,7 @@ class Mario(Entity):
                 self.anim_timer = 0
 
     class Idle_State(State):
+        """State when on the ground and not moving"""
         def on_enter(self, owner_object, prev_state):
             if owner_object.animation.mario_size == 'Small_Mario':
                 owner_object.animation.current_sprite = sprites.SMALL_MARIO_IDLE
@@ -302,6 +324,7 @@ class Mario(Entity):
             return self
 
     class Jump_State(State):
+        """State when jumping when spacebar input affects velocity"""
         def on_event(self, event):
             if event == 'no jump':
                 return Mario.No_Jump_State()
@@ -320,6 +343,7 @@ class Mario(Entity):
                 owner_object.action_states.on_event('no jump')
         
     class No_Jump_State(State):
+        """State when in mid air but spacebar input does not affect velocity"""
         def on_event(self, event):
             if event == 'idle':
                 return Mario.Idle_State()
@@ -332,6 +356,7 @@ class Mario(Entity):
             return self
 
     class Move_State(State):
+        """State when moving on the ground and not breaking or decelerating"""
         def on_event(self, event):
             if event == 'decel':
                 return Mario.Decel_State()
@@ -355,6 +380,7 @@ class Mario(Entity):
             owner_object.animation.run_anim()
 
     class Brake_State(State):
+        """State when input is opposite velocity"""
         def on_event(self, event):
             if event == 'move':
                 return Mario.Move_State()
@@ -379,6 +405,7 @@ class Mario(Entity):
                 owner_object.animation.current_sprite = sprites.BIG_MARIO_BRAKE
 
     class Decel_State(State):
+        """State when moving when there is no longer any input"""
         def on_event(self, event):
             if event == 'idle':
                 return Mario.Idle_State()
@@ -402,6 +429,7 @@ class Mario(Entity):
             owner_object.animation.run_anim()
 
     class Invincible_State(State):
+        """State after shrinking when mario is invincible"""
         def __init__(self):
             self.invincible_timer = 0
             self.blink_timer = 0
@@ -426,6 +454,7 @@ class Mario(Entity):
             owner_object.animation.reset_anim_vars()
 
     class Small_Mario(State):
+        """State when mario is small"""
         def on_event(self, event):
             if event == 'grow':
                 return Mario.Grow_Mario()
@@ -438,6 +467,7 @@ class Mario(Entity):
             return self
         
     class Grow_Mario(State):
+        """State when mario is growing"""
         def on_event(self, event):
             if event == 'big mario':
                 return Mario.Big_Mario()
@@ -463,6 +493,7 @@ class Mario(Entity):
             owner_object.freeze_movement = False
 
     class Big_Mario(State):
+        """State when mario is big"""
         def on_event(self, event):
             if event == 'shrink':
                 return Mario.Shrink_Mario()
@@ -473,6 +504,7 @@ class Mario(Entity):
             return self
 
     class Shrink_Mario(State):
+        """State when mario is shrinking"""
         def on_event(self, event):
             if event == 'invincible':
                 return Mario.Invincible_State()
@@ -500,6 +532,7 @@ class Mario(Entity):
             owner_object.freeze_movement = False
 
     class Crouch_State(State):
+        """State when mario is crouching"""
         def on_event(self, event):
             if event == 'brake':
                 return Mario.Brake_State()
@@ -532,6 +565,7 @@ class Mario(Entity):
             owner_object.pos.y -= 31
         
     class Dead_Mario(State):
+        """State when mario is dead"""
         def __init__(self):
             self.death_timer = 0
 
@@ -556,6 +590,7 @@ class Mario(Entity):
                 owner_object.pos += owner_object.vel * c.delta_time
 
     class Win_State(State):
+        """State when mario wins, runs and manages events related to the final win animation"""
         def __init__(self):
             self.animation_step = 0
             self.timer = 0

@@ -6,6 +6,7 @@ from ..utils import accelerate
 from .. import level
 
 class Goomba(Entity):
+    """Goomba class"""
     def __init__(self, rect, vel):
         super(Goomba, self).__init__(vel, rect)
         self.animation = self.Animation()
@@ -29,22 +30,26 @@ class Goomba(Entity):
         self.check_for_destroy()
 
     def check_for_destroy(self):
+        """Checks if instance can be destroyed"""
         if self.pos.y > c.SCREEN_SIZE.y:
             level.enemies.remove(self)
 
     def move(self):
+        """Splits up x and y movement"""
         if self.vel.x != 0:
             self.move_single_axis(self.vel.x, 0)
         if self.vel.y != 0:
             self.move_single_axis(0, self.vel.y)
 
     def move_single_axis(self, dx, dy):
+        """Updates position"""
         self.pos.x += dx * c.delta_time
         self.pos.y += dy * c.delta_time
         if self.state_machine.get_state() != 'Knocked_State':
             self.check_collisions(dx, dy)
 
     def check_collisions(self, dx, dy):
+        """Checks whether x or y movement caused collisions"""
         other_collider = self.rect.check_collisions(level.static_colliders + level.dynamic_colliders)
         other_enemy = self.rect.check_collisions([enemy for enemy in level.enemies if enemy is not self and enemy.is_active])
 
@@ -68,6 +73,7 @@ class Goomba(Entity):
 
 
     class Animation():
+        """Contains specific animation variables and functions for this class"""
         def __init__(self):
             self.current_sprite = sprites.GOOMBA_RUN[0]
 
@@ -77,6 +83,7 @@ class Goomba(Entity):
             self.squish_delay_over = False
 
         def run_anim(self):
+            """Animation when running"""
             self.current_sprite = sprites.GOOMBA_RUN[self.anim_frame % 2]
             self.anim_timer += c.delta_time
             if self.anim_timer > 14 * c.delta_time:
@@ -84,15 +91,18 @@ class Goomba(Entity):
                 self.anim_timer = 0
 
         def squish_delay(self):
+            """Make goomba remain for a certain amount of time after being squished"""
             self.anim_timer += c.delta_time
             if self.anim_timer > 20 * c.delta_time:
                 self.squish_delay_over = True
 
         def reset_anim_vars(self):
+            """Reset animation variables"""
             self.anim_timer = 0
             self.anim_frame = 0
 
     class Run_State(State):
+        """State when running around"""
         def on_event(self, event):
             if event == 'knocked':
                 return Goomba.Knocked_State()
@@ -107,6 +117,7 @@ class Goomba(Entity):
             owner_object.animation.reset_anim_vars()        
 
     class Knocked_State(State):
+        """State when knocked by brick block or turtle shell"""
         def on_event(self, event):
             if event == 'dead':
                 return Goomba.Dead_State()
@@ -115,10 +126,11 @@ class Goomba(Entity):
         def on_enter(self, owner_object, prev_state):
             owner_object.vel.y = c.GOOMBA_KNOCKED_VEL_Y
             owner_object.animation.current_sprite = sprites.GOOMBA_KNOCKED
-            sounds.kick.play()
             c.killed_goombas += 1
+            sounds.kick.play()
 
     class Squish_State(State):
+        """State when getting squished"""
         def on_event(self, event):
             if event == 'dead':
                 return Goomba.Dead_State()
@@ -136,10 +148,12 @@ class Goomba(Entity):
                 owner_object.state_machine.on_event('dead')
 
     class Dead_State(State):
+        """State when dead, destroys instance of goomba"""
         def on_enter(self, owner_object, prev_state):
             level.enemies.remove(owner_object)
 
 class Turtle(Entity):
+    """Turtle Class"""
     def __init__(self, rect, vel):
         super(Turtle, self).__init__(vel, rect)
         self.animation = self.Animation()
@@ -162,6 +176,7 @@ class Turtle(Entity):
             c.screen.blit(sprites.tile_set, (view_pos.x, view_pos.y), self.animation.current_sprite)
     
     def check_for_destroy(self):
+        """Checks if instance can be destroyed"""
         if self.pos.y > c.SCREEN_SIZE.y:
             level.enemies.remove(self)
     
@@ -172,12 +187,14 @@ class Turtle(Entity):
             self.move_single_axis(0, self.vel.y)
 
     def move_single_axis(self, dx, dy):
+        """Move position based on velocity"""
         self.pos.x += dx * c.delta_time
         self.pos.y += dy * c.delta_time
         if self.state_machine.get_state() != 'Knocked_State':
             self.check_collisions(dx, dy)
 
     def check_collisions(self, dx, dy):
+        """Checks if x or y movement caused collisions and performs according actions"""
         other_collider = self.rect.check_collisions(level.static_colliders + level.dynamic_colliders)
         other_enemy = self.rect.check_collisions([enemy for enemy in level.enemies if enemy is not self])
 
@@ -203,6 +220,7 @@ class Turtle(Entity):
                 other_enemy.is_active = True
 
     class Animation():
+        """Contains specific animation variables and functions for this class"""
         def __init__(self):
             self.current_sprite = sprites.TURTLE[0]
 
@@ -217,6 +235,7 @@ class Turtle(Entity):
                 self.anim_timer = 0
 
     class Run_State(State):
+        """State when running around"""
         def on_event(self, event):
             if event == 'squish':
                 return Turtle.Shell_State()
@@ -226,6 +245,7 @@ class Turtle(Entity):
             owner_object.animation.run_anim()
 
     class Shell_State(State):
+        """State when turtle is in its shell"""
         def on_event(self, event):
             if event == 'move shell':
                 return Turtle.Move_Shell()
@@ -240,6 +260,7 @@ class Turtle(Entity):
             sounds.stomp.play()
 
     class Move_Shell(State):
+        """State when turtle is in its shell and moving"""
         def __init__(self):
             self.can_kill_timer = 0
 

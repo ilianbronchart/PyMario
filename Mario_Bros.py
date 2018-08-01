@@ -6,14 +6,14 @@ import os
 import sys
 
 if __name__ == '__main__':
-    pg.init()
+    pg.init() #Initialize pygame module
     c.screen = pg.display.set_mode((c.SCREEN_SIZE.x, c.SCREEN_SIZE.y))
     pg.display.set_caption(c.CAPTION)
     c.clock = pg.time.Clock()
 
-    menu = menu.Menu()
+    menu = menu.Menu() 
     menu.menu_loop()
-    if menu.quit_state == 'play':
+    if menu.quit_state == 'play': #Check whether to continue to game or quit app
         main = main.Main()
         main.main_loop()
         if main.quit_state == 'menu':

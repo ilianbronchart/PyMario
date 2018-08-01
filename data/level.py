@@ -11,9 +11,11 @@ items = []
 enemies = []
 brick_fragments = []
 
+#Start and End tile for grouping large rows of tiles into one collider
 start_tile = None
 end_tile = None
 
+#Read pixel data from level map and instantiate objects corresponding to pixel colors
 for y in range(0, level_1.size[1]):
     for x in range(0, level_1.size[0]):
         color = level_1.getpixel((x, y))
@@ -60,9 +62,12 @@ for y in range(0, level_1.size[1]):
             rect = Rectangle(Vector2(pos.x, pos.y - 24), 48, 72)
             enemies.append(Turtle(rect, Vector2()))
 
+#Instantiate flagpole
 rect = Rectangle(Vector2(9504, 96), 48, 456)
 flag_pos = Vector2(9480, 120)
 c.flagpole = Flagpole(rect, flag_pos)
+
+#Create separate list of super mushrooms to check collisions
 super_mushrooms = [item for item in items if isinstance(item, Super_Mushroom)]
 
 

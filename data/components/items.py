@@ -6,6 +6,7 @@ from .. import level
 from ..utils import accelerate
 
 class Coin(Game_Object):
+    """Coin item class"""
     def __init__(self, rect):
         super(Coin, self).__init__(rect)
         self.animation = self.Animation(self.pos.y)
@@ -21,6 +22,7 @@ class Coin(Game_Object):
         self.check_for_destroy()
 
     def check_for_destroy(self):
+        """Checks if instance can be destroyed"""
         if self.collected:
             level.items.remove(self)
 
@@ -29,6 +31,7 @@ class Coin(Game_Object):
         c.screen.blit(sprites.tile_set, (view_pos.x, view_pos.y), self.animation.current_sprite)
 
     class Animation():
+        """Contains specific animation variables and functions for this class"""
         def __init__(self, start_height):
             self.current_sprite = sprites.COIN[0]
 
@@ -39,6 +42,7 @@ class Coin(Game_Object):
             self.bounce_iteration = 0
 
         def anim(self):
+            """Spinning animation"""
             self.current_sprite = sprites.COIN[self.anim_frame % 4]
             self.anim_timer += c.delta_time
             if self.anim_timer > 3 * c.delta_time:
@@ -49,9 +53,11 @@ class Coin(Game_Object):
             self.new_y = self.start_height - self.anim_function(self.bounce_iteration)
 
         def anim_function(self, bounce_iteration):
+            """Returns new y based on quadratic function to create bounce"""
             return -(bounce_iteration - 12) ** 2 + 144
 
 class Super_Mushroom(Entity):
+    """Super mushroom class"""
     def __init__(self, rect, vel):
         super(Super_Mushroom, self).__init__(vel, rect)
 
@@ -75,18 +81,21 @@ class Super_Mushroom(Entity):
         self.check_for_destroy()
 
     def check_for_destroy(self):
+        """Checks if instance can be destroyed"""
         if self.collected:
             sounds.powerup.play()
             c.collected_mushrooms += 1
             level.items.remove(self)
 
     def move(self):
+        """Separates x and y movement"""
         if self.vel.x != 0:
             self.move_single_axis(self.vel.x, 0)
         if self.vel.y != 0:
             self.move_single_axis(0, self.vel.y)
 
     def move_single_axis(self, dx, dy):
+        """Checks to see whether x or y movement caused collisions"""
         self.pos.x += dx * c.delta_time
         self.pos.y += dy * c.delta_time
         other_collider = self.rect.check_collisions(level.static_colliders + level.dynamic_colliders)
@@ -104,12 +113,14 @@ class Super_Mushroom(Entity):
             self.vel.y = 0
         
     class Animation():
+        """Contains specific animation variables and functions for this class"""
         def __init__(self, start_height):
             self.new_y = start_height
             self.anim_iteration = 0
             self.has_animated = False
 
         def deploy_anim(self):
+            """Animation when deploying super mushroom"""
             if self.anim_iteration == 48:
                 self.has_animated = True
             if not self.has_animated:

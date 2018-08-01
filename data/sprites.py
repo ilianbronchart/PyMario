@@ -4,6 +4,7 @@ from PIL import Image
 
 graphics_folder = path.join(path.dirname(__file__), 'resources', 'graphics')
 
+#Load sprites needed for the game
 tile_set = pg.image.load(path.join(graphics_folder, 'tile_set.png'))
 tile_set_flipped = pg.image.load(path.join(graphics_folder, 'tile_set_flipped.png'))
 text_image = pg.image.load(path.join(graphics_folder, 'text_image.png'))
@@ -13,6 +14,7 @@ menu = pg.image.load(path.join(graphics_folder, 'menu.png'))
 digits = pg.image.load(path.join(graphics_folder, 'digits.png'))
 level_1 = Image.open(path.join(graphics_folder, 'map.png'))
 
+#Sprite rectangles to retrieve section of atlas
 EMPTY_SPRITE = (240, 48, 48, 48)
 
 SMALL_MARIO_RUN = [
