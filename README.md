@@ -1,7 +1,9 @@
 # PyMario
 Mario Bros in python &amp; pygame
 <hr>
-## Dependencies
-  * Python - 3.7
-  * PyGame - 1.9.3
-  * PIL - 1.1.7
+<h2>Dependencies:</h2>
+<ul>
+   <li> Python - 3.7 </li>
+   <li> PyGame - 1.9.3 </li>
+   <li> PIL - 1.1.7 </li>
+</ul>
