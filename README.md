@@ -1,8 +1,8 @@
 # PyMario
 Mario Bros in python &amp; pygame
 <hr>
-Written in python 3.7
-Modules:
+Written in python 3.7 <br>
+External modules:
   <ul>
     <li>Pygame</li>
     <li>PIL</li>
