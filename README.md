@@ -1,6 +1,5 @@
 # PyMario
 Mario Bros in python &amp; pygame
-<hr>
 <h2>Dependencies:</h2>
 <ul>
    <li> Python - 3.7 </li>
