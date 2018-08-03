@@ -89,6 +89,7 @@ class Mario(Entity):
             #Make sure that mario can't jump when running off a ledge
             if self.pos.y > self.start_height:
                 self.action_states.on_event('no jump')
+                
             self.check_flip_sprites()
 
         if self.current_mario_state == 'Invincible_Mario':
