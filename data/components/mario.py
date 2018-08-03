@@ -78,17 +78,20 @@ class Mario(Entity):
 
     def physics_update(self):
         """Perform actions based on input"""
-        if not self.current_mario_state == 'Invincible_State':
+        if self.current_mario_state != 'Invincible_Mario':
             self.mario_states.update()
+
         if not self.freeze_movement:
             self.state_events()
             self.action_states.update()
             self.movement()
+
+            #Make sure that mario can't jump when running off a ledge
             if self.pos.y > self.start_height:
                 self.action_states.on_event('no jump')
             self.check_flip_sprites()
 
-        if self.current_mario_state == 'Invincible_State':
+        if self.current_mario_state == 'Invincible_Mario':
             self.mario_states.update()
 
         self.rect.h = self.animation.current_sprite[3]
@@ -156,7 +159,7 @@ class Mario(Entity):
         self.pos.y += dy * c.delta_time
 
         self.collider_collisions(dx, dy)
-        if self.current_mario_state != 'Invincible_State':
+        if self.current_mario_state != 'Invincible_Mario':
             self.check_entity_collisions() 
 
         self.check_backtrack()
@@ -185,10 +188,10 @@ class Mario(Entity):
             self.pos.x = other_collider.pos.x + other_collider.rect.w
             self.vel.x = 0
         elif dy > 0:
-            self.pos.y = other_collider.pos.y - self.rect.h
-            self.vel.y = 0
             if self.current_action_state == 'No_Jump_State':
                 self.action_states.on_event('idle')
+            self.pos.y = other_collider.pos.y - self.rect.h
+            self.vel.y = 0
         elif dy < 0:
             self.interact_with_tile(other_collider)
             self.action_states.on_event('no jump')
@@ -428,7 +431,7 @@ class Mario(Entity):
         def update(self, owner_object):
             owner_object.animation.run_anim()
 
-    class Invincible_State(State):
+    class Invincible_Mario(State):
         """State after shrinking when mario is invincible"""
         def __init__(self):
             self.invincible_timer = 0
@@ -507,7 +510,7 @@ class Mario(Entity):
         """State when mario is shrinking"""
         def on_event(self, event):
             if event == 'invincible':
-                return Mario.Invincible_State()
+                return Mario.Invincible_Mario()
             if event == 'grow mario':
                 return Mario.Grow_Mario()
             return self

@@ -75,6 +75,7 @@ class Camera(Rectangle):
         super(Camera, self).__init__(pos, w, h)
     
     def contains(self, other):
+        """Checks if camera horizontally contains a rectangle"""
         return ((other.pos.x > self.pos.x and other.pos.x < self.pos.x + c.SCREEN_SIZE.x) or 
                 (other.pos.x + other.w > self.pos.x and other.pos.x + other.w < self.pos.x + c.SCREEN_SIZE.x))
 
@@ -129,7 +130,7 @@ class State():
 class Digit_System():
     """Class for displaying and handling on-screen digits like score"""
     def __init__(self, start_pos, number_of_digits, start_value = 0):
-        self.total_value = 0
+        self.total_value = start_value
         self.start_pos = start_pos
         self.number_of_digits = number_of_digits #Total amount of digits the digit system handles
         self.digit_array = []
@@ -137,12 +138,10 @@ class Digit_System():
 
     def update_value(self, new_value):
         """Updates the total value and digit array of the digit system"""
-        self.digit_array = []
         self.total_value = new_value
         if new_value > 0:
             remaining_digits = self.number_of_digits - self.get_number_of_digits(new_value)
-            for i in range(0, remaining_digits):
-                self.digit_array.append(0)
+            self.digit_array = [0] * remaining_digits
             for x in str(self.total_value):
                 self.digit_array.append(int(x))
         else:
@@ -151,6 +150,7 @@ class Digit_System():
     def draw(self):
         """Draw the digit system"""
         for i, x in enumerate(self.digit_array):
+            #Digit width = 24
             c.screen.blit(sprites.digits, (self.start_pos.x + 24 * i, self.start_pos.y), (24 * x, 0, 24, 21))
 
     def get_number_of_digits(self, value):
