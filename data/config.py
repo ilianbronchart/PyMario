@@ -1,7 +1,7 @@
-from .modules import Vector2
+from .basetypes import Vector2
 import pygame as pg
 
-#Variables shared among different modules
+#Variables shared among different basetypes
 screen = None
 clock = None
 camera = None
@@ -55,17 +55,15 @@ GOOMBA_KNOCKED_VEL_Y = -0.8
 MAXIMUM_CAMERA_SCROLL = 9300
 LEVEL_END_X = 9840
 
+#Distance from left side of the screen, when camera starts following
+CAMERA_FOLLOW_X = 300
+
 #Sets timer value so animations start instantly instead of counting up first
 INITIAL_TIMER_VALUE = 1000
 
-#Scores
-total_score = 0
-collected_coins = 0
-collected_mushrooms = 0
-killed_goombas = 0
-time_score = 0
-
 #Score values
+collected_coins = 0
+total_score = 0
 COIN_SCORE = 200
 MUSHROOM_SCORE = 1000
 GOOMBA_SCORE = 100

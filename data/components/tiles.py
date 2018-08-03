@@ -1,5 +1,5 @@
 from .. import config as c
-from ..modules import Vector2, Game_Object, State_Machine, State, Entity, Rectangle
+from ..basetypes import Vector2, Game_Object, State_Machine, State, Entity, Rectangle
 from .. import sprites
 from .. import sounds
 from ..utils import accelerate
@@ -81,10 +81,11 @@ class Question(Game_Object):
                 return Question.Open_State()
             return self
 
-        def on_enter(self, owner_object, prev_state):
+        def on_enter(self, owner_object):
             owner_object.animation.current_sprite = sprites.Q_BLOCK_OPEN
             if owner_object.contents.__class__.__name__ == 'Coin':
                 owner_object.contents.deployed = True
+                c.total_score += c.COIN_SCORE
                 c.collected_coins += 1
                 sounds.coin.play()
             else:
@@ -101,7 +102,7 @@ class Question(Game_Object):
         def on_event(self, event):
             return self
         
-        def on_enter(self, owner_object, prev_state):
+        def on_enter(self, owner_object):
             owner_object.contents.deployed = True
 
 class Brick(Game_Object):
@@ -170,7 +171,7 @@ class Brick(Game_Object):
         def __init__(self):
             self.wait_for_frame = 0
 
-        def on_enter(self, owner_object, prev_state):
+        def on_enter(self, owner_object):
             owner_object.instantiate_fragments()
             sounds.brick_smash.play()
 

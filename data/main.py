@@ -2,7 +2,7 @@ from . import config as c
 from . import level
 from . import sprites
 from . import sounds
-from .modules import Camera, Vector2, Rectangle, Digit_System
+from .basetypes import Camera, Vector2, Rectangle, Digit_System
 import pygame as pg
 from .components import mario
 
@@ -28,7 +28,7 @@ class Main():
         c.screen.fill(c.BACKGROUND_COLOR)
         self.draw_background()
         
-        for item in level.items:
+        for item in (level.coins + level.super_mushrooms):
             if item.deployed:
                 item.draw()
 
@@ -73,11 +73,6 @@ class Main():
     def handle_digit_systems(self):
         """Updates all on-screen digit systems"""
         if not c.mario.current_mario_state == 'Dead_Mario':
-            c.total_score = (c.collected_coins * c.COIN_SCORE +
-                            c.collected_mushrooms * c.MUSHROOM_SCORE+
-                            c.killed_goombas * c.GOOMBA_SCORE +
-                            c.time_score * c.TIME_SCORE)
-
             self.handle_time()
             self.score_system.update_value(c.total_score)
             self.coin_score.update_value(c.collected_coins)
@@ -107,7 +102,7 @@ class Main():
         #If mario has won and time is still > 0, count down and add score
         if c.final_count_down and self.time.total_value > 0:
             self.time.update_value(self.time.total_value - 1)
-            c.time_score += 1
+            c.total_score += c.TIME_SCORE
             sounds.count_down.play()
             if self.time.total_value == 0:
                 sounds.count_down.stop()
@@ -121,7 +116,7 @@ class Main():
         for tile in level.dynamic_colliders:
             tile.update()
 
-        for item in level.items:
+        for item in (level.coins + level.super_mushrooms):
             if item.deployed:
                 item.update()
 

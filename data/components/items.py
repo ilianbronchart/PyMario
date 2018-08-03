@@ -1,4 +1,4 @@
-from ..modules import Game_Object, Vector2, Entity
+from ..basetypes import Game_Object, Vector2, Entity
 from .. import config as c
 from .. import sprites
 from .. import sounds
@@ -24,7 +24,7 @@ class Coin(Game_Object):
     def check_for_destroy(self):
         """Checks if instance can be destroyed"""
         if self.collected:
-            level.items.remove(self)
+            level.coins.remove(self)
 
     def draw(self):
         view_pos = c.camera.to_view_space(self.pos)
@@ -84,8 +84,8 @@ class Super_Mushroom(Entity):
         """Checks if instance can be destroyed"""
         if self.collected:
             sounds.powerup.play()
-            c.collected_mushrooms += 1
-            level.items.remove(self)
+            c.total_score += c.MUSHROOM_SCORE
+            level.super_mushrooms.remove(self)
 
     def move(self):
         """Separates x and y movement"""

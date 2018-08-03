@@ -1,5 +1,5 @@
 from . import config as c
-from .modules import Vector2
+from .basetypes import Vector2
 import math
 
 def clamp(x, a, b):

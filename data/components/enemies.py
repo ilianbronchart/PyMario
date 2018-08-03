@@ -1,5 +1,5 @@
 from .. import config as c
-from ..modules import Vector2, Entity, State, State_Machine, Rectangle
+from ..basetypes import Vector2, Entity, State, State_Machine, Rectangle
 from .. import sprites
 from .. import sounds
 from ..utils import accelerate
@@ -123,10 +123,10 @@ class Goomba(Entity):
                 return Goomba.Dead_State()
             return self
 
-        def on_enter(self, owner_object, prev_state):
+        def on_enter(self, owner_object):
             owner_object.vel.y = c.GOOMBA_KNOCKED_VEL_Y
             owner_object.animation.current_sprite = sprites.GOOMBA_KNOCKED
-            c.killed_goombas += 1
+            c.total_score += c.GOOMBA_SCORE
             sounds.kick.play()
 
     class Squish_State(State):
@@ -136,11 +136,11 @@ class Goomba(Entity):
                 return Goomba.Dead_State()
             return self
     
-        def on_enter(self, owner_object, prev_state):
+        def on_enter(self, owner_object):
             owner_object.animation.current_sprite = sprites.GOOMBA_SQUISHED
             owner_object.rect = Rectangle(owner_object.pos, 0, 0)
             sounds.stomp.play()
-            c.killed_goombas += 1
+            c.total_score += c.GOOMBA_SCORE
 
         def update(self, owner_object):
             owner_object.animation.squish_delay()
@@ -149,7 +149,7 @@ class Goomba(Entity):
 
     class Dead_State(State):
         """State when dead, destroys instance of goomba"""
-        def on_enter(self, owner_object, prev_state):
+        def on_enter(self, owner_object):
             level.enemies.remove(owner_object)
 
 class Turtle(Entity):
@@ -251,7 +251,7 @@ class Turtle(Entity):
                 return Turtle.Move_Shell()
             return self
 
-        def on_enter(self, owner_object, prev_state):
+        def on_enter(self, owner_object):
             owner_object.rect.h = 42
             owner_object.pos.y += 30
             owner_object.animation.current_sprite = sprites.TURTLE_SHELL
@@ -267,7 +267,7 @@ class Turtle(Entity):
         def on_event(self, event):
             return self
 
-        def on_enter(self, owner_object, prev_state):
+        def on_enter(self, owner_object):
             sounds.kick.play()
 
         def update(self, owner_object):

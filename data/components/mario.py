@@ -1,4 +1,4 @@
-from ..modules import Game_Object, Vector2, Entity, Rectangle, State_Machine, State
+from ..basetypes import Game_Object, Vector2, Entity, Rectangle, State_Machine, State
 from .. import config as c
 from .. import sprites
 from .. import sounds
@@ -304,7 +304,7 @@ class Mario(Entity):
 
     class Idle_State(State):
         """State when on the ground and not moving"""
-        def on_enter(self, owner_object, prev_state):
+        def on_enter(self, owner_object):
             if owner_object.animation.mario_size == 'Small_Mario':
                 owner_object.animation.current_sprite = sprites.SMALL_MARIO_IDLE
             else:
@@ -330,7 +330,7 @@ class Mario(Entity):
                 return Mario.No_Jump_State()
             return self
 
-        def on_enter(self, owner_object, prev_state):
+        def on_enter(self, owner_object):
             if owner_object.current_mario_state == 'Small_Mario':
                 sounds.small_jump.play()
             else:
@@ -396,7 +396,7 @@ class Mario(Entity):
                 return Mario.Idle_State()
             return self
 
-        def on_enter(self, owner_object, prev_state):
+        def on_enter(self, owner_object):
             c.ACCELERATION = 0
             c.FRICTION = c.BRAKE_FRICTION
             if owner_object.animation.mario_size == 'Small_Mario':
@@ -421,7 +421,7 @@ class Mario(Entity):
                 return Mario.Crouch_State()
             return self
 
-        def on_enter(self, owner_object, prev_state):
+        def on_enter(self, owner_object):
             c.ACCELERATION = 0
             c.FRICTION = c.DECEL_FRICTION
 
@@ -475,7 +475,7 @@ class Mario(Entity):
                 return Mario.Shrink_Mario()
             return self
 
-        def on_enter(self, owner_object, prev_state):
+        def on_enter(self, owner_object):
             owner_object.animation.start_height = owner_object.pos.y
             owner_object.animation.reset_anim_vars()
             owner_object.freeze_movement = True
@@ -512,7 +512,7 @@ class Mario(Entity):
                 return Mario.Grow_Mario()
             return self
 
-        def on_enter(self, owner_object, prev_state):
+        def on_enter(self, owner_object):
             owner_object.animation.reset_anim_vars()
             owner_object.animation.start_height = owner_object.pos.y
             owner_object.animation.start_sprite_height = owner_object.animation.current_sprite[3]
@@ -546,7 +546,7 @@ class Mario(Entity):
                 return Mario.Idle_State()
             return self
 
-        def on_enter(self, owner_object, prev_state):
+        def on_enter(self, owner_object):
             c.FRICTION = c.BRAKE_FRICTION
             c.ACCELERATION = 0
             owner_object.animation.current_sprite = sprites.MARIO_CROUCH
@@ -572,7 +572,7 @@ class Mario(Entity):
         def on_event(self, event):
             return self
 
-        def on_enter(self, owner_object, prev_state):
+        def on_enter(self, owner_object):
             owner_object.animation.current_sprite = sprites.DEAD_MARIO
             owner_object.vel.y = c.DEATH_VEL_Y
             owner_object.vel.x = 0
@@ -598,7 +598,7 @@ class Mario(Entity):
         def on_event(self, event):
             return self
 
-        def on_enter(self, owner_object, prev_state):
+        def on_enter(self, owner_object):
             owner_object.animation.reset_anim_vars()
             owner_object.animation.start_height = owner_object.pos.y
             owner_object.animation.new_y = owner_object.pos.y

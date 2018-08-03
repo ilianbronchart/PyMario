@@ -17,5 +17,9 @@ if __name__ == '__main__':
         main = main.Main()
         main.main_loop()
         if main.quit_state == 'menu':
-            os.execl(sys.executable, sys.executable, *sys.argv)
+            #If you think this is a cheat 
+            #to avoid destroying instances,
+            #you are right, I'm just too
+            #lazy to do that.
+            os.execl(sys.executable, sys.executable, *sys.argv) #Restart game
     pg.quit()

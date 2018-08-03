@@ -8,13 +8,13 @@ class Game_Object():
         self.rect = rect
 
     def __getattr__(self, name):
-        """Makes code shorter by not having to type rect.pos when retrieving position"""
+        """Makes lines shorter by not having to type rect.pos when retrieving position"""
         if name == 'pos':
             return self.rect.pos
         return object.__getattribute__(self, name)
 
     def __setattr__(self, name, value):
-        """Makes code shorter by not having to type rect.pos when setting position"""
+        """Makes lines shorter by not having to type rect.pos when setting position"""
         if name == 'pos':
             self.rect.pos = value
         else:
@@ -49,7 +49,7 @@ class Rectangle():
                    other.pos.y >= self.pos.y + self.h)
 
     def check_collisions(self, collider_list):
-        """Check collisions between two rectangles, if in a rangle of 100px"""
+        """Check collisions between two rectangles, if in a rangle of 100px, returns a single collider"""
         for collider in collider_list:
             if abs(self.pos.x - collider.pos.x) < 100 or collider.rect.w >= 100: #Wider colliders are checked anyway
                 if self.overlaps(collider.rect):
@@ -63,7 +63,6 @@ class Rectangle():
                 if self.overlaps(entity.rect):
                     others.append(entity)
         return others
-                
 
 class Entity(Game_Object):
     """Entity class for Gameobjects that possess velocity"""
@@ -86,7 +85,7 @@ class Camera(Rectangle):
     def update(self):
         """Update position of camera based on mario velocity and position"""
         if self.pos.x < c.MAXIMUM_CAMERA_SCROLL:
-            if c.mario.pos.x > c.camera.pos.x + 300 and c.mario.vel.x > 0:
+            if c.mario.pos.x > c.camera.pos.x + c.CAMERA_FOLLOW_X and c.mario.vel.x > 0:
                 c.camera.pos.x += c.mario.vel.x * c.delta_time
 
 class State_Machine():
@@ -97,12 +96,11 @@ class State_Machine():
 
     def on_event(self, event):
         """Updates current state and runs on_exit and on_enter"""
-        prev_state = self.state
         new_state = self.state.on_event(event)
-        if prev_state is not new_state:
+        if new_state is not self.state:
             self.state.on_exit(self.owner_object)
-            self.state = self.state.on_event(event)
-            self.state.on_enter(self.owner_object, prev_state)
+            self.state = new_state
+            self.state.on_enter(self.owner_object)
 
     def update(self):
         self.state.update(self.owner_object)
@@ -116,7 +114,7 @@ class State():
         """Handles events delegated to this state"""
         pass
 
-    def on_enter(self, owner_object, prev_state):
+    def on_enter(self, owner_object):
         """Performs actions when entering state"""
         pass
 
