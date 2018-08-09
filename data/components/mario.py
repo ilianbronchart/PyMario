@@ -169,8 +169,9 @@ class Mario(Entity):
         """Stop mario from backtracking in the level"""
         if self.pos.x < c.camera.pos.x:
             self.pos.x = clamp(self.pos.x, c.camera.pos.x, c.SCREEN_SIZE.x)
-            self.vel.x = 0    
-            self.action_states.on_event('idle')      
+            self.vel.x = 0   
+            if all(self.current_action_state != state for state in ["Jump_State", "No_Jump_State"]):
+                self.action_states.on_event('idle')      
 
     def collider_collisions(self, dx, dy):
         """Check for collisions with tiles"""
@@ -567,6 +568,7 @@ class Mario(Entity):
 
         def on_exit(self, owner_object):
             owner_object.pos.y -= 31
+            owner_object.start_height = owner_object.pos.y
         
     class Dead_Mario(State):
         """State when mario is dead"""
