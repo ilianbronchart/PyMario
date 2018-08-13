@@ -104,6 +104,7 @@ class Main():
             self.time.update_value(self.time.total_value - 1)
             c.total_score += c.TIME_SCORE
             sounds.count_down.play()
+            sounds.count_down.set_volume(0.15)
             if self.time.total_value == 0:
                 sounds.count_down.stop()
                 sounds.coin.play()
